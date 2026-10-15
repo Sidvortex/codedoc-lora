@@ -1,0 +1,38 @@
+# QLoRA fine-tune of a small code model to write Python docstrings.
+# Sized for one Kaggle T4 (16 GB, fp16 only, no bf16).
+
+model:
+  name: Qwen/Qwen2.5-Coder-1.5B-Instruct
+  load_in_4bit: true          # QLoRA. Set false for plain LoRA in fp16.
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: all-linear
+
+data:
+  dataset: code-search-net/code_search_net
+  subset: python
+  max_train: 20000            # ~1.5-2 h on a T4 for 1 epoch
+  max_eval: 300
+  min_doc_words: 5            # skip one-word docstrings
+  max_doc_words: 120
+  max_code_chars: 2500        # skip huge functions
+  seed: 42
+
+train:
+  output_dir: outputs/codedoc-qwen1.5b
+  epochs: 1
+  lr: 2.0e-4
+  batch_size: 4
+  grad_accum: 4               # effective batch 16
+  max_length: 1024
+  warmup_ratio: 0.03
+  logging_steps: 20
+  eval_steps: 250
+  save_steps: 500
+
+eval:
+  max_new_tokens: 160
+  batch_size: 8

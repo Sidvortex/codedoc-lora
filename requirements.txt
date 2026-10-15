@@ -1,0 +1,9 @@
+transformers>=5.0
+peft>=0.17
+accelerate>=1.0
+bitsandbytes>=0.45
+datasets>=3.0
+pyyaml
+rouge-score
+sacrebleu
+tqdm
